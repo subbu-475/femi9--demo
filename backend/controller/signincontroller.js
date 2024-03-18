@@ -22,7 +22,7 @@ const InsertVerifyUser = async(name,email,password)=>{
         userVerify.save().then(()=>{
             console.log("user saved in the userverify collections");
         })
-        const activationLink=`http://localhost:8000/signin/${token}`
+        const activationLink=`https://femi9-demo.onrender.com/signin/${token}`
         const content = `<h4>Hi,there</h4>
         <p>Plese click the below link to verify</p>
         <a href=${activationLink}>click here</a>
