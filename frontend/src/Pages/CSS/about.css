@@ -1,0 +1,44 @@
+body{
+    background:#f5f5dc;
+}
+.about-para{
+    color: #12372A ;
+    font-weight: lighter;
+    text-align: justify;
+}
+
+.about-heading{
+    color:#12372A ;
+}
+
+.about-heading-new {
+    color: #12372A;
+    font-size: 2.2rem;
+    font-weight: 600 !important;
+}
+
+.about-box{
+    background:#f5f5dc;
+}
+
+.about-contact{
+    color:#12372A ;
+}
+
+.aboutus{
+    color: #12372A;
+    font-size: 4.5rem !important;
+    font-weight: 500 !important;
+}
+
+.about-contact1{
+    color: #12372A !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+}
+
+@media screen and (max-width: 768px) {
+   .about-mediascreen{
+    margin-top: 10%;
+   }
+}

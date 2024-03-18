@@ -1,0 +1,74 @@
+.popular {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    max-width: 100%;
+    margin: auto;
+    background-color: #f5f5dc;
+  }
+  
+  
+  
+  .about-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4rem;
+    max-width: 100%;
+    margin: auto;
+  }
+  
+  .about-image {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 1rem;
+  }
+  
+  .about-text {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.25rem;
+    text-align: left;
+    font-weight: lighter;
+  }
+
+  .head {
+
+    
+
+    font-family: 'Roboto', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #12372A;
+    text-align: center;
+  }
+  
+  .about-heading {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #12372A;
+  }
+
+ 
+  
+  @media (min-width: 768px) {
+    .about-data {
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .about-text {
+      max-width: 500px;
+      text-align: left;
+    }
+  }
+
+  @media (max-width:767px){
+    .popular{
+        margin: auto;
+        padding: 10%;
+    }
+  }
+  

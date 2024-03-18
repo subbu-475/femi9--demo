@@ -1,0 +1,48 @@
+.container {
+    background-color: linear-gradient(90deg, #f5f5dc, #12372A 120%);
+    max-width: 500px;
+    margin: 50px auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 2);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+h1 {
+    text-align: center;
+}
+
+.form-control {
+    margin-bottom: 15px;
+}
+
+.login-btn {
+    width: 100%;
+    background: linear-gradient(90deg, rgba(1, 148, 31, 0.907), rgba(2, 138, 122, 0.819));
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    margin-top: 20px;
+    font-weight: 500;
+    font-size: 1.5rem;
+    backdrop-filter: blur(10px); /* Adjust the blur value to control the blur effect */
+}
+
+.login-btn:hover {
+    background-color: #FFD449;
+}
+
+.signup-text {
+    margin-left: 10px;
+    color: #12372A;
+    text-decoration: underline;
+}
+
+.login-heading {
+    color: #12372A;
+}
+
+label {
+    color: #12372A;
+    font-weight: 500;
+}
+

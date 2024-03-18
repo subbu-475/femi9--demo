@@ -1,0 +1,43 @@
+.container{
+    background-color:linear-gradient(90deg, #f5f5dc, #12372A 120%);
+    max-width: 500px;
+    margin: 50px auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 2);
+    border-radius: 10px;
+    padding: 50px;
+    backdrop-filter: blur(10px);
+}
+h1{
+    text-align: center;
+    color: #104911;
+}
+
+.form-control{
+    margin-bottom: 15px;
+}
+
+.signup-btn{
+    width: 100%;
+    background:linear-gradient(90deg, rgba(28, 173, 6, 0.715), rgba(2, 58, 15, 0.83));
+    border: none;
+    color: #fff;
+    margin-top: 20px;
+    
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+.signup-btn:hover{
+    background-color:#548C2F;
+    border:2px solid #548C2F;
+
+}
+.form-text{
+    margin-bottom: 50px;
+    
+}
+
+.login-text{
+    margin-left: 10px;
+    color: #104911;
+    text-decoration: underline;
+}
