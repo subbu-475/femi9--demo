@@ -11,6 +11,8 @@ import purple from '../Assets/purple.jpg'
 import Carousel from 'react-bootstrap/Carousel';
 import axios from 'axios'
 import API_URL from '../../config/global';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 
 const ProductDisplay = (props) => {
@@ -19,13 +21,25 @@ const ProductDisplay = (props) => {
 
   const [image, setImage] = useState();
   const { addToCart } = useContext(ShopContext);
-  const id  = useParams().productId;
+  const id = useParams().productId;
   const [products, setProducts] = useState({});
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState();
+  const [quantity, setQuantity] = useState(0);
+
+  const incrementQuantity = () => {
+    setQuantity(quantity + 1);
+  };
+
+  // Function to handle quantity decrement
+  const decrementQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
 
   useEffect(() => {
-    
+
 
     fetchProduct();
   }, [props]);
@@ -83,7 +97,7 @@ const ProductDisplay = (props) => {
                 src={image}
                 alt="First slide"
               />
-       
+
             </Carousel.Item>
             <Carousel.Item>
               <img
@@ -91,7 +105,7 @@ const ProductDisplay = (props) => {
                 src="/padss.jpg"
                 alt="Second slide"
               />
-      
+
             </Carousel.Item>
           </Carousel>
         </div>
@@ -116,8 +130,8 @@ const ProductDisplay = (props) => {
               <span className="detail-label">Price:</span>
               <span className="detail-value">
                 <span className="productdisplay-right-price-new">Rs.{products?.newprice}</span>
-                <br/>
-                <span className="productdisplay-right-price-old">Rs.{products?.oldprice}</span>
+                <br />
+                {/* <span className="productdisplay-right-price-old">Rs.{products?.oldprice}</span> */}
               </span>
             </li>
             <li>
@@ -134,11 +148,16 @@ const ProductDisplay = (props) => {
             </li>
             <li>
               <span className="detail-label">Availability:</span>
-              <span className="detail-value">{products?.availability}</span>
+              <span className="detail-value" style={{color:"green"}}>! In Stock</span>
             </li>
             <li>
               <span className="detail-label">Quantity:</span>
-              <span className="detail-value">{products?.quantity}</span>
+
+              <span className="detail-value">
+                <RemoveIcon className='minus-icon' onClick={decrementQuantity} />
+                {quantity}
+                <AddIcon className='plus-icon' onClick={incrementQuantity} />
+              </span>
             </li>
           </ul>
         </div>

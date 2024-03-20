@@ -84,7 +84,7 @@ const AboutPage = () => {
                             <EmailIcon /> Email: <Link href="mailto:nirmalaagencies@gmail.com" className='about-contact1'>nirmalaagencies@gmail.com</Link>
                         </Typography>
                         <Typography variant="body1">
-                            <LocationOnIcon /> Chennai.
+                            <LocationOnIcon /> Trichy.
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
