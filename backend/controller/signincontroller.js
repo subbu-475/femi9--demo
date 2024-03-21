@@ -22,7 +22,7 @@ const InsertVerifyUser = async(name,email,password)=>{
         userVerify.save().then(()=>{
             console.log("user saved in the userverify collections");
         })
-        const activationLink=`https://femi9-demo.onrender.com/signin/${token}`
+        const activationLink=`${process.env.backend}/${token}`
         const content = `<h4>Hi,there</h4>
         <p>Plese click the below link to verify</p>
         <a href=${activationLink}>click here</a>
@@ -43,9 +43,12 @@ const generateToken=(email)=>{
 }
 
 const CheckVerifyUser = async(token)=>{
+    
     try{
         const tokenedUser = await VerifyUser.findOne({token:token});
+        
         if(tokenedUser){
+           
             const insertUser = new User({
                 name:tokenedUser.name,
                 email:tokenedUser.email,
@@ -77,7 +80,7 @@ const CheckVerifyUser = async(token)=>{
         
     }
     catch (e){
-        console.log(e);
+        
         return `
         <html>
         <body>
