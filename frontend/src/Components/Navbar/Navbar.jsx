@@ -25,7 +25,7 @@ const Navbar1 = () => {
   const [isUserAuthenticated, setIsUserAuthenticated] = useState("false");
   const { getTotalCartItems } = useContext(ShopContext);
   const menuRef = useRef();
-  const [userDetails,setUserDetails] = useState({});
+  const [userDetails, setUserDetails] = useState({});
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -42,25 +42,32 @@ const Navbar1 = () => {
     e.target.classList.toggle('open');
   }
 
+  const [cartCount, setCartCount] = useState(0); // State to manage cart count
+
   useEffect(() => {
     const fetchData = async () => {
       let token = localStorage.getItem('token');
-      
       if (!!token) {
         try {
-          let response = await axios.post(`${API_URL}/auth/users`, { token }); 
-          let data = response.data.singleUser;
+          let response = await axios.post(`${API_URL}/auth/users`, { token });
+          let data = response?.data?.singleUser;
           setUserDetails({
-            ...userDetails,...data
-          })
+            ...userDetails,
+            ...data,
+          });
+          let respon = await axios.get(`${API_URL}/cart/cartitems`);
+          let allCartItems = respon?.data?.items;
+          let filteredDataByUserID = allCartItems.filter(
+            (data) => data?.userid == response?.data?.singleUser?._id
+          );
+          setCartCount(filteredDataByUserID?.length); // Update cart count
         } catch (error) {
           console.error(error);
         }
       }
-      
       setIsUserAuthenticated(!!token);
     };
-  
+
     fetchData();
   }, [localStorage.getItem('token')]);
 
@@ -101,10 +108,10 @@ const Navbar1 = () => {
               {isUserAuthenticated ?
                 <>
 
-                  <NavDropdown title={userDetails.name?.substring(0,10)} id="get-name">
-                  <NavDropdown.Item href={`/userdetails/${userDetails._id}`} className='profile-dropdown'>My Account</NavDropdown.Item>
-                    <NavDropdown.Item href="#action4" className='profile-dropdown'>
-                      Address
+                  <NavDropdown title={userDetails.name?.substring(0, 10)} id="get-name">
+                    <NavDropdown.Item href={`/userdetails/${userDetails._id}`} className='profile-dropdown'>My Account</NavDropdown.Item>
+                    <NavDropdown.Item href='/placedorders' className='profile-dropdown'>
+                      My orders
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item href="#action5" onClick={handleLogout} className='profile-dropdown'>
@@ -112,17 +119,17 @@ const Navbar1 = () => {
                     </NavDropdown.Item>
                   </NavDropdown>
                   <Link to='/cart'><img src={cart_icon} alt="" /></Link>
-                  <div className="nav-cart-count">{getTotalCartItems()}</div>
+                  <div className="nav-cart-count">{cartCount}</div>
 
 
 
-                </> : 
+                </> :
                 <>
-                <Link to='/'><img src={cart_icon} alt="" /></Link>
+                  <Link to='/login'><img src={cart_icon} alt="" /></Link>
                   <div className="nav-cart-count">0</div>
-                <Link to='/login'><button>Login</button></Link>
+                  <Link to='/login'><button>Login</button></Link>
                 </>
-                }
+              }
 
 
             </div>
@@ -135,5 +142,3 @@ const Navbar1 = () => {
 }
 
 export default Navbar1;
-
-

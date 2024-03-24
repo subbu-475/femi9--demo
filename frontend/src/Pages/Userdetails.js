@@ -36,6 +36,7 @@ const UserDetails = () => {
     const [countryData, setCountryData] = useState([]);
     const [stateData, setStateData] = useState([]);
     const [cityData, setCityData] = useState([]);
+    const [editMode, setEditMode] = useState(false);
 
     const [selectedCountry, setSelectedCountry] = useState("Please Select Country");
     const [selectedState, setSelectedState] = useState("Please Select State");
@@ -73,31 +74,44 @@ const UserDetails = () => {
         landmark: '', city: "", pincode: "", email: "", mobile: ""
     });
 
-    const [address, setAddress] = useState({
 
+
+    const [address, setAddress] = useState({
+        firstname: '',
+        lastname: '',
+        doorno: '',
+        street: '',
+        landmark: '', city: "", pincode: "", email: "", mobile: ""
     })
 
     useEffect(() => {
-        const fetchData = async () => {
-            let token = localStorage.getItem('token');
-
-            if (!!token) {
-                try {
-                    const response = await axios.get(`${API_URL}/auth/users/${id}`);
-                    const data = response.data.singleUser;
-                    setUserData((prev) => ({
-                        ...prev, ...data
-                    }))
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-
-
-        };
-
         fetchData();
     }, [])
+
+
+    const fetchData = async () => {
+        let token = localStorage.getItem('token');
+
+        if (!!token) {
+            try {
+                const response = await axios.get(`${API_URL}/auth/users/${id}`);
+                const data = response?.data?.singleUser;
+                setUserData((prev) => ({
+                    ...prev, ...data
+                }))
+                setAddress((prev) => ({
+                    ...prev, ...data
+                }))
+                setSelectedCountry(response?.data?.singleUser?.country)
+                setSelectedState(response?.data?.singleUser?.state)
+                setSelectedCity(response?.data?.singleUser?.district)
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+
+    };
 
     const handleCountryChange = (event) => {
         setSelectedCountry(event.target.value);
@@ -119,6 +133,10 @@ const UserDetails = () => {
         });
     };
 
+    const handleEditClick = () => {
+        setEditMode(!editMode); // Toggle edit mode
+    };
+
     const [openAlert, setOpenAlert] = useState(false);
 
     const handleSubmit = (e) => {
@@ -133,17 +151,17 @@ const UserDetails = () => {
             setAlertMessage("Please Enter Valid Mobile!")
             return;
         }
-        else if (userData.firstName === "" || userData.firstName === undefined) {
+        else if (userData.firstname === "" || userData.firstname === undefined) {
             setOpenAlert(true);
             setAlertMessage("Please Fill First Name!")
             return;
         }
-        else if (userData.lastName === "" || userData.lastName === undefined) {
+        else if (userData.lastname === "" || userData.lastname === undefined) {
             setOpenAlert(true);
             setAlertMessage("Please Fill Last Name!")
             return;
         }
-        else if (userData.doorNo === "" || userData.lastName === undefined) {
+        else if (userData.doorno === "" || userData.doorno === undefined) {
             setOpenAlert(true);
             setAlertMessage("Please Fill Door No!")
             return;
@@ -208,14 +226,16 @@ const UserDetails = () => {
                 country: selectedCountry,
             };
 
-            console.log(postData);
+
 
             const response = await axios.put(`${API_URL}/auth/users/${id}`, postData);
 
             setOpenAlert(true);
             setAlertMessage("Data Updated Successfully");
+            handleEditClick();
+            await fetchData();
         } catch (err) {
-            console.log(err);
+
             // Handling error and showing alert message
             setOpenAlert(true);
             setAlertMessage("Something Went Wrong!");
@@ -231,228 +251,184 @@ const UserDetails = () => {
             <br />
             <br />
             <br />
-            <Paper elevation={3} style={{ padding: 20, maxWidth: 1000, margin: 'auto', marginTop: 50 }}>
+            <Paper elevation={3} style={{ padding: 20, maxWidth: 1000, margin: 'auto', marginTop: 10 }} className='user-details'>
                 <Grid container spacing={2} sx={{ display: 'flex', color: 'darkgreen', alignItems: 'center' }}>
                     <Grid item>
                         <Typography variant="h5" gutterBottom>Personal Information</Typography>
                     </Grid>
                     <Grid item>
-                        <Typography variant="h6" gutterBottom sx={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}><EditIcon />Edit</Typography>
+                        <Typography onClick={handleEditClick} variant="h6" gutterBottom sx={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}>Edit</Typography>
                     </Grid>
                 </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6} md={6} lg={4}>
-                        <FormControl fullWidth variant="outlined">
-                            <Typography>Email <b style={{ color: 'red' }}>*</b></Typography>
-                            <OutlinedInput
-                                id="email"
-                                name="firstName"
-                                value={userData.email}
-                                onChange={
-                                    (e) => {
-                                        setUserData((prev) => ({
-                                            ...prev, email: e.target.value
-                                        }))
-
-                                    }
-                                }
-
-                                style={{ height: '40px' }}
-                                placeholder='email'
-                            />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={6} lg={4}>
-                        <FormControl fullWidth variant="outlined">
-                            <Typography>Mobile No <b style={{ color: 'red' }}>*</b></Typography>
-                            <OutlinedInput
-                                id="mobile"
-                                name="mobile"
-                                type='text'
-                                value={userData.mobile}
-                                onChange={
-                                    (e) => {
-                                        setUserData((prev) => ({
-                                            ...prev, mobile: e.target.value
-                                        }))
-
-                                    }
-                                }
-
-                                style={{ height: '40px' }}
-                                placeholder='Mobile'
-                            />
-                        </FormControl>
-                    </Grid>
-                </Grid>
-                <br />
-                <br />
-                <Grid container spacing={2} sx={{ display: 'flex', color: 'darkgreen', alignItems: 'center' }}>
-                    <Grid item>
-                        <Typography variant="h5" gutterBottom>User Details</Typography>
-                    </Grid>
-                </Grid>
-
-
-                <form onSubmit={handleSubmit}>
+                {editMode ? <>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6} md={6} lg={4}>
                             <FormControl fullWidth variant="outlined">
-                                <Typography>First Name <b style={{ color: 'red' }}>*</b></Typography>
+                                <Typography>Email </Typography>
                                 <OutlinedInput
-                                    id="firstName"
+                                    id="email"
                                     name="firstName"
-                                    value={userData.firstName}
-                                    onChange={handleChange}
+                                    value={userData.email}
+                                    readOnly
+                                    onChange={
+                                        (e) => {
+                                            setUserData((prev) => ({
+                                                ...prev, email: e.target.value
+                                            }))
 
-                                    style={{ height: '40px' }}
-                                    placeholder='First Name'
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={6} lg={4}>
-                            <FormControl fullWidth variant="outlined">
-                                <Typography>Last Name<b style={{ color: 'red' }}>*</b></Typography>
-                                <OutlinedInput
-                                    id="lastName"
-                                    name="lastName"
-                                    value={userData.lastName}
-                                    onChange={handleChange}
-
-                                    style={{ height: '40px' }}
-                                    placeholder='Last Name'
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={6} lg={4}>
-                            <FormControl fullWidth variant="outlined">
-                                <Typography>Door No <b style={{ color: 'red' }}>*</b></Typography>
-                                <OutlinedInput
-                                    id="doorNo"
-                                    name="doorNo"
-                                    value={userData.doorNo}
-                                    onChange={handleChange}
-
-                                    style={{ height: '40px' }}
-                                    placeholder='Door No'
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={6} lg={4}>
-                            <FormControl fullWidth variant="outlined">
-                                <Typography>Street <b style={{ color: 'red' }}>*</b></Typography>
-                                <OutlinedInput
-                                    id="street"
-                                    name="street"
-                                    value={userData.street}
-                                    onChange={handleChange}
-
-                                    style={{ height: '40px' }}
-                                    placeholder='Street'
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={6} lg={4}>
-                            <FormControl fullWidth variant="outlined">
-                                <Typography>Landmark <b style={{ color: 'red' }}>*</b></Typography>
-                                <OutlinedInput
-                                    id="landmark"
-                                    name="landmark"
-                                    value={userData.landmark}
-                                    onChange={handleChange}
-
-                                    style={{ height: '40px' }}
-                                    placeholder='Landmark'
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={6} lg={4}>
-                            <FormControl fullWidth variant="outlined">
-                                <Typography>City <b style={{ color: 'red' }}>*</b></Typography>
-                                <OutlinedInput
-                                    id="city"
-                                    name="city"
-                                    value={userData.city}
-                                    onChange={handleChange}
-                                    placeholder='City'
-                                    style={{ height: '40px' }}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={6} lg={4}>
-                            <FormControl fullWidth variant="outlined">
-                                <Typography>Pincode <b style={{ color: 'red' }}>*</b></Typography>
-                                <OutlinedInput
-                                    id="pincode"
-                                    name="pincode"
-                                    value={userData.pincode}
-                                    onChange={handleChange}
-
-                                    style={{ height: '40px' }}
-                                    placeholder='Pincode'
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={6} lg={4}>
-                            <FormControl fullWidth variant="outlined">
-                                <Typography>Country <b style={{ color: 'red' }}>*</b></Typography>
-                                <Select
-                                    id="country"
-                                    value={selectedCountry}
-                                    onChange={handleCountryChange}
-                                    MenuProps={{
-                                        PaperProps: {
-                                            style: {
-                                                marginTop: 'unset'
-                                            }
                                         }
-                                    }}
+                                    }
+
                                     style={{ height: '40px' }}
-                                >
-                                    {countryData.map((country) => (
-                                        <MenuItem key={country.isoCode} value={country.isoCode}>
-                                            {country.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
+                                    placeholder='email'
+                                />
                             </FormControl>
                         </Grid>
-                        {selectedCountry && (
-                            <Grid item xs={12} sm={6} md={6} lg={4}>
-                                <FormControl fullWidth variant="outlined">
-                                    <Typography>State <b style={{ color: 'red' }}>*</b></Typography>
-                                    <Select
-                                        id="state"
-                                        style={{ height: '40px' }}
-                                        value={selectedState}
-                                        onChange={handleStateChange}
-                                        MenuProps={{
-                                            PaperProps: {
-                                                style: {
-                                                    marginTop: 'unset'
-                                                }
-                                            }
-                                        }}
-                                    >
-                                        {stateData.map((state) => (
-                                            <MenuItem key={state.isoCode} value={state.isoCode}>
-                                                {state.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                        )}
-                        {selectedState && (
-                            <Grid item xs={12} sm={6} md={6} lg={4}>
-                                <FormControl fullWidth variant="outlined">
-                                    <Typography>District <b style={{ color: 'red' }}>*</b></Typography>
+                        <Grid item xs={12} sm={6} md={6} lg={4}>
+                            <FormControl fullWidth variant="outlined">
+                                <Typography>Mobile No <b style={{ color: 'red' }}>*</b></Typography>
+                                <OutlinedInput
+                                    id="mobile"
+                                    name="mobile"
+                                    type='text'
+                                    value={userData.mobile}
+                                    onChange={
+                                        (e) => {
+                                            setUserData((prev) => ({
+                                                ...prev, mobile: e.target.value
+                                            }))
 
-                                    <Select
-                                        id="city"
-                                        value={selectedCity}
+                                        }
+                                    }
+
+                                    style={{ height: '40px' }}
+                                    placeholder='Mobile'
+                                />
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                    <br />
+                    <br />
+                    <Grid container spacing={2} sx={{ display: 'flex', color: 'darkgreen', alignItems: 'center' }}>
+                        <Grid item>
+                            <Typography variant="h5" gutterBottom
+                            >User Details</Typography>
+                        </Grid>
+                    </Grid>
+
+
+                    <form onSubmit={handleSubmit}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6} md={6} lg={4}>
+                                <FormControl fullWidth variant="outlined">
+                                    <Typography>First Name <b style={{ color: 'red' }}>*</b></Typography>
+                                    <OutlinedInput
+                                        id="firstName"
+                                        name="firstName"
+                                        value={userData.firstname}
+                                        onChange={(e) => {
+                                            setUserData((prev) => ({ ...prev, firstname: e.target.value }))
+                                        }}
+
                                         style={{ height: '40px' }}
-                                        onChange={handleCityChange}
+                                        placeholder='First Name'
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6} lg={4}>
+                                <FormControl fullWidth variant="outlined">
+                                    <Typography>Last Name<b style={{ color: 'red' }}>*</b></Typography>
+                                    <OutlinedInput
+                                        id="lastName"
+                                        name="lastName"
+                                        value={userData.lastname}
+                                        onChange={(e) => {
+                                            setUserData((prev) => ({ ...prev, lastname: e.target.value }))
+                                        }}
+
+                                        style={{ height: '40px' }}
+                                        placeholder='Last Name'
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6} lg={4}>
+                                <FormControl fullWidth variant="outlined">
+                                    <Typography>Door No <b style={{ color: 'red' }}>*</b></Typography>
+                                    <OutlinedInput
+                                        id="doorNo"
+                                        name="doorNo"
+                                        value={userData.doorno}
+                                        onChange={(e) => {
+                                            setUserData((prev) => ({ ...prev, doorno: e.target.value }))
+                                        }}
+
+                                        style={{ height: '40px' }}
+                                        placeholder='Door No'
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6} lg={4}>
+                                <FormControl fullWidth variant="outlined">
+                                    <Typography>Street <b style={{ color: 'red' }}>*</b></Typography>
+                                    <OutlinedInput
+                                        id="street"
+                                        name="street"
+                                        value={userData.street}
+                                        onChange={handleChange}
+
+                                        style={{ height: '40px' }}
+                                        placeholder='Street'
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6} lg={4}>
+                                <FormControl fullWidth variant="outlined">
+                                    <Typography>Landmark <b style={{ color: 'red' }}>*</b></Typography>
+                                    <OutlinedInput
+                                        id="landmark"
+                                        name="landmark"
+                                        value={userData.landmark}
+                                        onChange={handleChange}
+
+                                        style={{ height: '40px' }}
+                                        placeholder='Landmark'
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6} lg={4}>
+                                <FormControl fullWidth variant="outlined">
+                                    <Typography>City <b style={{ color: 'red' }}>*</b></Typography>
+                                    <OutlinedInput
+                                        id="city"
+                                        name="city"
+                                        value={userData.city}
+                                        onChange={handleChange}
+                                        placeholder='City'
+                                        style={{ height: '40px' }}
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6} lg={4}>
+                                <FormControl fullWidth variant="outlined">
+                                    <Typography>Pincode <b style={{ color: 'red' }}>*</b></Typography>
+                                    <OutlinedInput
+                                        id="pincode"
+                                        name="pincode"
+                                        value={userData.pincode}
+                                        onChange={handleChange}
+
+                                        style={{ height: '40px' }}
+                                        placeholder='Pincode'
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6} lg={4}>
+                                <FormControl fullWidth variant="outlined">
+                                    <Typography>Country <b style={{ color: 'red' }}>*</b></Typography>
+                                    <Select
+                                        id="country"
+                                        value={selectedCountry}
+                                        onChange={handleCountryChange}
                                         MenuProps={{
                                             PaperProps: {
                                                 style: {
@@ -460,22 +436,119 @@ const UserDetails = () => {
                                                 }
                                             }
                                         }}
+                                        style={{ height: '40px' }}
                                     >
-                                        {cityData.map((city) => (
-                                            <MenuItem key={city.name} value={city.name}>
-                                                {city.name}
+                                        {countryData.map((country) => (
+                                            <MenuItem key={country.isoCode} value={country.isoCode}>
+                                                {country.name}
                                             </MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
                             </Grid>
-                        )}
-                    </Grid>
-                    <Button type="submit" variant="contained" color="success" style={{ marginTop: 20 }}>
-                        Submit
-                    </Button>
-                </form>
+                            {selectedCountry && (
+                                <Grid item xs={12} sm={6} md={6} lg={4}>
+                                    <FormControl fullWidth variant="outlined">
+                                        <Typography>State <b style={{ color: 'red' }}>*</b></Typography>
+                                        <Select
+                                            id="state"
+                                            style={{ height: '40px' }}
+                                            value={selectedState}
+                                            onChange={handleStateChange}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    style: {
+                                                        marginTop: 'unset'
+                                                    }
+                                                }
+                                            }}
+                                        >
+                                            {stateData.map((state) => (
+                                                <MenuItem key={state.isoCode} value={state.isoCode}>
+                                                    {state.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                            )}
+                            {selectedState && (
+                                <Grid item xs={12} sm={6} md={6} lg={4}>
+                                    <FormControl fullWidth variant="outlined">
+                                        <Typography>District <b style={{ color: 'red' }}>*</b></Typography>
+
+                                        <Select
+                                            id="city"
+                                            value={selectedCity}
+                                            style={{ height: '40px' }}
+                                            onChange={handleCityChange}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    style: {
+                                                        marginTop: 'unset'
+                                                    }
+                                                }
+                                            }}
+                                        >
+                                            {cityData.map((city) => (
+                                                <MenuItem key={city.name} value={city.name}>
+                                                    {city.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                            )}
+                        </Grid>
+                        <Button type="submit" variant="contained" color="success" style={{ marginTop: 20 }}>
+                            Submit
+                        </Button>
+                    </form>
+                </>
+
+                    : <>
+
+                        <Grid container spacing={2}>
+                            {/* <Grid item xs={12}>
+                                <Typography variant="h5" gutterBottom>Address Details</Typography>
+                            </Grid> */}
+                            <Grid item xs={12}>
+                                <Typography><strong>Email:</strong> {address.email}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography><strong>Mobile No:</strong> {address.mobile}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography><strong>Door No:</strong> {address.doorno}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography><strong>Street:</strong> {address.street}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography><strong>Landmark:</strong> {address.landmark}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography><strong>City:</strong> {address.city}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography><strong>District:</strong> {address.district}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography><strong>State:</strong> {address.state}</Typography>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Typography><strong>Country:</strong> {address.country}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography><strong>Pincode:</strong> {address.pincode}</Typography>
+                            </Grid>
+                        </Grid>
+
+                    </>}
+
             </Paper>
+
             {/* <Snackbar
                 open={openAlert}
                 autoHideDuration={6000}

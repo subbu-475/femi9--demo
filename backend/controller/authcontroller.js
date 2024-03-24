@@ -38,6 +38,29 @@ exports.getSingleUserById = async (req, res) => {
   }
 };
 
+exports.getSingleUserByToken = async (req, res) => {
+  try {
+    // Extract the token from the request body
+    const token = req.params.token;
+
+    // Find the user by token in the database
+    const singleUser = await User.findOne({ token }).select('-password');
+
+    // If user is found, send it in the response
+    if (singleUser) {
+      res.status(200).json({ singleUser });
+    } else {
+      // If user is not found, send a 404 response
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    // If any error occurs during the process, log it and send a 500 response
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
 
 exports.updateUserDetails = async (req, res) => {
   try {

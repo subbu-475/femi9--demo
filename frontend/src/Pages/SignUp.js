@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Container, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import '../styles/signup.css'
 import { Link, useNavigate } from 'react-router-dom';
@@ -26,6 +26,10 @@ function SignUp() {
             [e.target.name]: e.target.value
         });
     };
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

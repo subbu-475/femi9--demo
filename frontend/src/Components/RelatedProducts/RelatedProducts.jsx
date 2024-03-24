@@ -32,7 +32,7 @@ const RelatedProducts = () => {
       <hr />
       <div className="relatedproducts-item">
         {products.map((item, i) => {
-          return <Item key={i} id={item._id} name={item.name} image={item.image} new_price={item.newprice} old_price={item.oldprice} size={item.size} />
+          return <Item key={i} id={item._id} name={item.name} image={item.image} new_price={item.newprice}  size={item.size} />
         })}
       </div>
       <Dialog

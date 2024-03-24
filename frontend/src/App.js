@@ -15,6 +15,7 @@ import Signup from './Pages/SignUp';
 import UserDetails from './Pages/Userdetails';
 import About from '../src/Pages/About';
 import Contact from '../src/Pages/Contact';
+import PlacedOrders from './Pages/placedorders';
 
 function App() {
   return (
@@ -27,6 +28,8 @@ function App() {
           <Route path='/shop' element={<ShopCategory banner={men_banner} category="men" />} />
           <Route path='/about' element={<About />} />
           <Route path='/contact' element={<Contact />} />
+          <Route path='/cart' element={<Cart/>} />
+          <Route path='/placedorders' element={<PlacedOrders/>} />
           <Route path='/kids' element={<ShopCategory banner={kid_banner} category="kid" />} />
           <Route path="/product" element={<Product />}>
             <Route path=':productId' element={<Product />} />

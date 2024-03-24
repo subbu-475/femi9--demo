@@ -8,6 +8,8 @@ const path = require("path");
 const cors = require("cors");
 const authRoutes = require('./routes/authroute');
 const productRoutes = require('./routes/product');
+const cartRoutes = require('./routes/cart');
+const orderRoutes = require('./routes/order');
 
 const connectDB=require('./db')
 const signInRoutes = require('./routes/signin');
@@ -22,6 +24,8 @@ app.use('/signin',signInRoutes);
 app.use('/login',loginRoutes);
 app.use('/auth',authRoutes);
 app.use('/master',productRoutes);
+app.use('/cart',cartRoutes);
+app.use('/checkout',orderRoutes);
 
 
 

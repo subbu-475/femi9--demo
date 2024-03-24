@@ -29,6 +29,14 @@ select {
 
 
 
+@media screen and (max-width: 700px) {
+  .user-details {
+      margin: 10% 5% 0 5% !important
+  }
+}
+
+
+
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {

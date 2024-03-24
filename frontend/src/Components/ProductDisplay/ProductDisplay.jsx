@@ -3,7 +3,7 @@ import './ProductDisplay.css'
 import star_icon from "../Assets/star_icon.png";
 import star_dull_icon from "../Assets/star_dull_icon.png";
 import { ShopContext } from '../../Context/ShopContext';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import green from '../Assets/green.jpg'
 import blue from '../Assets/blue.jpg'
 import red from '../Assets/red.jpg'
@@ -13,6 +13,10 @@ import axios from 'axios'
 import API_URL from '../../config/global';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import { Button, Grid, Typography, Paper, OutlinedInput, InputLabel, FormControl, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 
 
 const ProductDisplay = (props) => {
@@ -25,7 +29,16 @@ const ProductDisplay = (props) => {
   const [products, setProducts] = useState({});
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState();
-  const [quantity, setQuantity] = useState(0);
+
+  const [openAlertLogin, setOpenAlertLogin] = useState(false);
+  const [alertMessageLogin, setAlertMessageLogin] = useState();
+
+  const [openAlertExist, setOpenAlertExist] = useState(false);
+  const [alertMessageExist, setAlertMessageExist] = useState();
+
+  const [quantity, setQuantity] = useState(1);
+
+  const navigate = useNavigate();
 
   const incrementQuantity = () => {
     setQuantity(quantity + 1);
@@ -38,6 +51,8 @@ const ProductDisplay = (props) => {
     }
   };
 
+  const [userData, setUserData] = useState({});
+
   useEffect(() => {
 
 
@@ -48,13 +63,96 @@ const ProductDisplay = (props) => {
     try {
       let res = await axios.get(`${API_URL}/master/products/${id}`);
       setProducts(res?.data)
-      console.log(res?.data.size)
+
     } catch (err) {
       setOpenAlert(true);
       setAlertMessage("something went wrong!")
       return;
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, [])
+
+
+  const fetchData = async () => {
+    let token = localStorage.getItem('token');
+
+
+    if (!!token) {
+      try {
+        const response = await axios.get(`${API_URL}/auth/tokeneduser/${token}`);
+        const data = response?.data?.singleUser;
+        setUserData((prev) => ({
+          ...prev, ...data
+        }))
+
+      } catch (error) {
+        let errorMessage = "Something went wrong!";
+        if (error.response && error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        }
+        setOpenAlert(true);
+        setAlertMessage(errorMessage);
+      }
+    }
+
+
+  };
+
+  const addingToCart = async () => {
+    let token = localStorage.getItem('token');
+    if (!!token) {
+      let response = await axios.get(`${API_URL}/cart/cartitems`);
+      let allCartItems = response?.data?.items
+
+      let filteredDataByUserID = allCartItems.filter((data) => data?.userid == userData?._id);
+
+      let sameItemExist = filteredDataByUserID.some((item) => item.productid == products?._id);
+
+      if (!sameItemExist) {
+        try {
+          let res = await axios.post(`${API_URL}/cart/cartitems`, {
+            name: products?.name,
+            userid: userData?._id,
+            image: products?.image,
+            type: products?.type,
+            size: products?.size,
+            vendor: products?.vendor,
+            newprice: products?.newprice,
+            quantity: quantity,
+            totalprice: quantity * products.newprice,
+            productid: products?._id,
+          });
+          setOpenAlert(true);
+          setAlertMessage("Added to the Cart!")
+          return;
+
+        }
+        catch (err) {
+          let errorMessage = "Something went wrong!";
+          if (err.response && err.response.data && err.response.data.message) {
+            errorMessage = err.response.data.message;
+          }
+          setOpenAlert(true);
+          setAlertMessage(errorMessage);
+        }
+      } else {
+        setOpenAlertExist(true);
+        setAlertMessageExist("Item Already Exist in the Cart! Please Check...")
+        return;
+      }
+
+
+    } else {
+      setOpenAlertLogin(true);
+      setAlertMessageLogin("Login Required! Please Login...");
+    }
+
+
+  }
+
 
   useEffect(() => {
     if (products?.image) {
@@ -82,14 +180,9 @@ const ProductDisplay = (props) => {
   return (
     <div className='productdisplay'>
       <div className="productdisplay-left">
-        {/* <div className="productdisplay-img-list">
-          <img src={image} alt="" />
-          <img src={image} alt="" />
-          <img src={image} alt="" />
-          <img src={image} alt="" />
-        </div> */}
+
         <div className="productdisplay-img">
-          {/* <img className='productdisplay-main-img' src={image} alt="" /> */}
+
           <Carousel data-bs-theme="dark" interval={2000}>
             <Carousel.Item>
               <img
@@ -112,18 +205,6 @@ const ProductDisplay = (props) => {
       </div>
       <div className="productdisplay-right">
         <h1>{product?.name}</h1>
-        {/* <div className="productdisplay-right-stars">
-          <img src={star_icon} alt="" />
-          <img src={star_icon} alt="" />
-          <img src={star_icon} alt="" />
-          <img src={star_icon} alt="" />
-          <img src={star_dull_icon} alt="" />
-          <p>(122)</p>
-        </div> */}
-        {/* <div className="productdisplay-right-prices">
-          <div className="productdisplay-right-price-old">Rs.{product?.oldprice}</div>
-          <div className="productdisplay-right-price-new">Rs.{product?.newprice}</div>
-        </div> */}
         <div className="productdisplay-right-description productdisplay-right-prices">
           <ul className="product-details-list">
             <li>
@@ -131,7 +212,7 @@ const ProductDisplay = (props) => {
               <span className="detail-value">
                 <span className="productdisplay-right-price-new">Rs.{products?.newprice}</span>
                 <br />
-                {/* <span className="productdisplay-right-price-old">Rs.{products?.oldprice}</span> */}
+
               </span>
             </li>
             <li>
@@ -148,7 +229,7 @@ const ProductDisplay = (props) => {
             </li>
             <li>
               <span className="detail-label">Availability:</span>
-              <span className="detail-value" style={{color:"green"}}>! In Stock</span>
+              <span className="detail-value" style={{ color: "green" }}>! In Stock</span>
             </li>
             <li>
               <span className="detail-label">Quantity:</span>
@@ -162,8 +243,77 @@ const ProductDisplay = (props) => {
           </ul>
         </div>
 
-        <button onClick={() => { addToCart(product.id) }}>ADD TO CART</button>
+        <button onClick={addingToCart} style={{ padding: '5%' }}>ADD TO CART</button>
       </div>
+      <Dialog
+        // fullWidth={true}
+        maxWidth='sm'
+        open={openAlert}
+        onClose={() => setOpenAlert(false)}
+      >
+        {/* <DialogTitle>Optional sizes</DialogTitle> */}
+        <DialogContent sx={{ display: "flex", flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <CheckCircleOutlineIcon style={{ fontSize: '50px', color: 'green' }} />
+          <br />
+          <DialogContentText style={{ color: 'black', fontSize: "1.5rem" }}>
+            {alertMessage}
+          </DialogContentText>
+
+
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenAlert(false)} style={{ color: 'white', background: "green" }}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        // fullWidth={true}
+        maxWidth='sm'
+        open={openAlertLogin}
+        onClose={() => setOpenAlertLogin(false)}
+      >
+        {/* <DialogTitle>Optional sizes</DialogTitle> */}
+        <DialogContent sx={{ display: "flex", flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <PriorityHighIcon style={{ fontSize: '50px', color: 'orange' }} />
+          <br />
+          <DialogContentText style={{ color: 'black', fontSize: "1.5rem" }}>
+            {alertMessageLogin}
+          </DialogContentText>
+
+
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setOpenAlertLogin(false);
+            navigate('/login');
+          }
+          } style={{ color: 'white', background: "orange" }}>Login</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        // fullWidth={true}
+        maxWidth='sm'
+        open={openAlertExist}
+        onClose={() => setOpenAlertExist(false)}
+      >
+        {/* <DialogTitle>Optional sizes</DialogTitle> */}
+        <DialogContent sx={{ display: "flex", flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <PriorityHighIcon style={{ fontSize: '50px', color: 'orange' }} />
+          <br />
+          <DialogContentText style={{ color: 'black', fontSize: "1.5rem" }}>
+            {alertMessageExist}
+          </DialogContentText>
+
+
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setOpenAlertExist(false);
+          }
+          } style={{ color: 'white', background: "orange" }}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   )
 }
