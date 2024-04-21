@@ -56,19 +56,11 @@ const OrderSchema = mongoose.Schema({
     },
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    razorpaypaymentid: {
+        type: String,
+        required: false,
+    },
+    // for products
     productname: {
         type: String,
         required: false,

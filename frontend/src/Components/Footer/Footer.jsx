@@ -32,6 +32,10 @@ const Footer = () => {
           <a href='/shop'><li>Products</li></a>
           <a href='/about'><li>About</li></a>
           <a href='/contact'><li>Contact</li></a>
+          <a href='/privacypolicy'><li>Privacy Policy</li></a>
+          <a href='/termsandconditions'><li>Terms and Condition</li></a>
+          <a href='/refundpolicy'><li>Refund Policy</li></a>
+          <a href='/shippingpolicy'><li>Shipping Policy</li></a>
         </ul>
         {/* Footer copyright */}
         <div className="footer-copyright">

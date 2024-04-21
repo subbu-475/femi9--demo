@@ -40,8 +40,12 @@ exports.getSingleUserById = async (req, res) => {
 
 exports.getSingleUserByToken = async (req, res) => {
   try {
+
+   
     // Extract the token from the request body
     const token = req.params.token;
+
+
 
     // Find the user by token in the database
     const singleUser = await User.findOne({ token }).select('-password');

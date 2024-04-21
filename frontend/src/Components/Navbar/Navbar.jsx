@@ -113,6 +113,9 @@ const Navbar1 = () => {
                     <NavDropdown.Item href='/placedorders' className='profile-dropdown'>
                       My orders
                     </NavDropdown.Item>
+                    <NavDropdown.Item href='/cart' className='profile-dropdown'>
+                      My Cart
+                    </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item href="#action5" onClick={handleLogout} className='profile-dropdown'>
                       Logout

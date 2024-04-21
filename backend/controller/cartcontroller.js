@@ -45,6 +45,7 @@ exports.getAllCartItems = async (req, res) => {
   
   // Delete a item
   exports.deleteItem = async (req, res) => {
+    console.log(req.params.id);
     try {
       const deletedItem = await Cart.findByIdAndDelete(req.params.id);
       if (deletedItem) {

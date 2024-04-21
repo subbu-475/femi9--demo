@@ -81,7 +81,9 @@ const AboutPage = () => {
                             <PhoneIcon /> Phone: <Link href="tel:+918610418066" className='about-contact1'>+91-8610418066</Link>
                         </Typography>
                         <Typography variant="body1" paragraph>
-                            <EmailIcon /> Email: <Link href="mailto:nirmalaagencies@gmail.com" className='about-contact1'>nirmalaagencies@gmail.com</Link>
+                            <EmailIcon /> Email: <Link href="mailto:
+femi9womens@gmail.com" className='about-contact1'>
+                                femi9womens@gmail.com</Link>
                         </Typography>
                         <Typography variant="body1">
                             <LocationOnIcon /> Trichy.

@@ -9,6 +9,7 @@ import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
+
 const CartItems = () => {
   const { getTotalCartAmount, removeFromCart } = useContext(ShopContext);
   const [cartItems, setCartItems] = useState([]);
@@ -64,48 +65,8 @@ const CartItems = () => {
   };
 
   const placeOrder = async () => {
-    try {
-      // Use Promise.all to wait for all async operations to complete
-      await Promise.all(cartItems.map(async (data) => {
-        await axios.post(`${API_URL}/checkout/orders`, {
-          clientname: `${userData?.firstname} ${userData?.lastname}`,
-          firstname: userData?.firstname,
-          lastname: userData?.lastname,
-          email: userData?.email,
-          mobile: userData?.mobile,
-          doorno: userData?.doorno,
-          street: userData?.street,
-          landmark: userData?.landmark,
-          city: userData?.city,
-          district: userData?.district,
-          state: userData?.state,
-          pincode: userData?.pincode,
-          country: userData?.country,
-          productname: data?.name,
-          userid: data?.userid,
-          image: data?.image,
-          type: data?.type,
-          size: data?.size,
-          vendor: data?.vendor,
-          quantity: data?.quantity,
-          productid: data?.productid,
-          totalprice: data?.totalprice,
-        });
-
-        await Promise.all(cartItems.map(async (data) => {
-          await axios.delete(`${API_URL}/cart/cartitem/${data._id}`);
-        }));
-
-        await getCartItemsByUser()
-
-        setOpenAlertorderPlaced(true);
-        setAlertMessageorderPlaced("Order Placed Succesfully!");
-      }));
-    } catch (err) {
-      let errorMessage = err.response?.data?.message || "Something went wrong!";
-      setOpenAlertLogin(true);
-      setAlertMessageLogin(errorMessage);
-    }
+    navigate('/stepper')
+    
   };
 
 
